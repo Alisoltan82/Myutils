@@ -172,7 +172,7 @@ def enhancing_binary_gray_images(image1, image2, print=True):
     plt.show()
     
 
-def df_to_train_test_gray(img_dir=str, df=pd.DataFrame, img_path_col=str, label_name_col=str, size:tuple=(224,224), save_dir=str):
+def df_split_Norm_gray(img_dir=str, df=pd.DataFrame, img_path_col=str, label_name_col=str, size:tuple=(224,224), save_dir=str):
     sums, sums_squared = 0, 0
 
     for c, patient in enumerate(tqdm(df)):
