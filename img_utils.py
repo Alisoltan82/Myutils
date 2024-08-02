@@ -7,8 +7,12 @@ import os
 from PIL import Image
 import nibabel as nib
 import pydicom as dicom
+import nibabel as nib
 from glob import glob
 import random
+import cv2
+from pathlib import Path
+from tqdm.auto import tqdm
 sns.set(style='whitegrid')
 
 
@@ -167,3 +171,41 @@ def enhancing_binary_gray_images(image1, image2, print=True):
 
     plt.show()
     
+
+def df_to_train_test_gray(img_dir=str, df=pd.DataFrame, img_path_col=str, label_name_col=str, size:tuple=(224,224), save_dir=str):
+    sums, sums_squared = 0, 0
+
+    for c, patient in enumerate(tqdm(df)):
+        img_path = df.iloc[c][img_path_col]
+        
+        # Check if the image is a DICOM file
+        if img_path.endswith('.dcm'):
+            ds = dicom.dcmread(img_path)
+            img = ds.pixel_array / 255.0
+            
+        # Check if the image is a NIFTI file
+        elif img_path.endswith('.nii.gz') or img_path.endswith('.nii'):
+            img = nib(img_path).get_data()
+            
+        # If it's not a DICOM or NIFTI file, assume it's a grayscale image
+        else:
+            img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) / 255.0
+        
+        img_r = cv2.resize(img, size).astype(np.float16)
+        
+        label = df.iloc[c][label_name_col]
+        
+        train_folder = 'train'
+        save_path = os.path.join(save_dir, train_folder, str(label))
+        os.makedirs(save_path, exist_ok=True)
+        np.save(os.path.join(save_path, f'{c:03d}'), img_r)
+        
+        normalizer = size[0] * size[1]
+        sums += np.sum(img_r) / normalizer
+        sums_squared += (img_r ** 2).sum() / normalizer
+
+    mean = sums / len(df)
+    print(f'train images mean after resize = {mean}')
+
+    std = np.sqrt((sums_squared/len(df)) - mean**2)
+    print(f'train images standard deviation after resize = {std}')
