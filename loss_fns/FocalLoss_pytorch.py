@@ -1,3 +1,8 @@
+import torch
+import torch.nn as nn
+import numpy as np
+
+
 class FocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma=2, ignore_index=-100, reduction='mean'):
         super().__init__()
