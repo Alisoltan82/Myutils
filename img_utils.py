@@ -30,7 +30,7 @@ def compare(image1, image2 , title = str):
 
 
 
-def dataset_check(dataset , count = int):
+def view_dataset(dataset , count = int):
     if not dataset or count <= 0:
      return
     
@@ -48,7 +48,7 @@ def dataset_check(dataset , count = int):
 
 
 
-def dataloader_check(dataloader , count = int):
+def view_dataloader(dataloader , count = int):
     """
     Check images in a data loader and make subplots grid-based on the count input.
 
@@ -78,7 +78,7 @@ def dataloader_check(dataloader , count = int):
 
 
 
-def plot_images_per_class(df, target_column, img_path_column, count):
+def view_images_per_class(df = pd.DataFrame, target_column = str, img_path_column = str, count = int):
     """
     Plot images for each class in the dataframe, limited to the specified count.
 
